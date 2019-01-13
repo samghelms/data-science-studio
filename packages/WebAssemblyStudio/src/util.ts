@@ -259,7 +259,7 @@ export async function uploadFilesToDirectory(items: any, root: Directory) {
       const entry = item.webkitGetAsEntry();
       if (entry.isDirectory) {
         if (root.getImmediateChild(entry.name)) {
-          const customRoot = root.handleNameCollision(entry.name);
+          const customRoot = await root.handleNameCollision(entry.name);
           return readUploadedDirectory(entry, root, customRoot);
         }
         return readUploadedDirectory(entry, root);

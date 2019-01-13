@@ -40,6 +40,7 @@ interface NewFileDialogState {
   fileType: FileType;
   description: string;
   name: string;
+  nameError: string;
 }
 
 export class NewFileDialog extends React.Component<NewFileDialogProps, NewFileDialogState> {
@@ -48,27 +49,27 @@ export class NewFileDialog extends React.Component<NewFileDialogProps, NewFileDi
     this.state = {
       fileType: FileType.C,
       description: "",
-      name: ""
+      name: "",
+      nameError: ""
     };
+    this.onChangeName = this.onChangeName.bind(this);
   }
-  onChangeName = (event: ChangeEvent<any>) => {
-    this.setState({ name: event.target.value });
+  async onChangeName(event: ChangeEvent<any>) {
+    const name = event.target.value;
+    const error = await this.getNameError(name);
+    this.setState({ name: name, nameError: error});
   }
-  getNameError() {
-    const directory = this.props.directory;
-
-    if (this.state.name) {
-      const fileNameError: string = validateFileName(this.state.name, this.state.fileType);
+  async getNameError(name: string) {
+    if (name) {
+      const fileNameError: string = validateFileName(name, this.state.fileType);
       if (fileNameError) {
         return fileNameError;
       }
-
       const directory = this.props.directory;
-      if (directory && appStore.getImmediateChild(directory, this.state.name)) {
-        return `File '${this.state.name}' already exists`;
+      if (directory && (await appStore.getImmediateChild(directory, name))) {
+        return `File '${name}' already exists`;
       }
     }
-
     return "";
   }
   fileName() {
@@ -134,7 +135,7 @@ export class NewFileDialog extends React.Component<NewFileDialogProps, NewFileDi
           </div>
         </div>
         <div style={{ flex: 1, padding: "8px" }}>
-          <TextInputBox label={"Name: " + (this.props.directory ? appStore.getPath(this.props.directory) + "/" : "")} error={this.getNameError()} value={this.state.name} onChange={this.onChangeName}/>
+          <TextInputBox label={"Name: " + (this.props.directory ? appStore.getPath(this.props.directory) + "/" : "")} error={this.state.nameError} value={this.state.name} onChange={this.onChangeName}/>
         </div>
         <div>
           <Button
@@ -149,7 +150,7 @@ export class NewFileDialog extends React.Component<NewFileDialogProps, NewFileDi
             icon={<GoFile />}
             label={this.createButtonLabel()}
             title="Create New File"
-            isDisabled={!this.state.fileType || !this.state.name || !!this.getNameError()}
+            isDisabled={!this.state.fileType || !this.state.name || !!this.state.nameError}
             onClick={() => {
               const file = new File(this.fileName(), this.state.fileType);
               return this.props.onCreate && this.props.onCreate(file);

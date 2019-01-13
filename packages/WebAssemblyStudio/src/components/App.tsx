@@ -258,6 +258,7 @@ export class App extends React.Component<AppProps, AppState> {
       // runTask("project:load", true, RunTaskExternals.Setup);
     });
     appStore.onDirtyFileUsed.register((file: File) => {
+      console.log("onDirtyFileUsed");
       this.logLn(`Changes in ${file.getPath()} were ignored, save your changes.`, "warn");
     });
     appStore.onTabsChange.register(() => {
@@ -290,21 +291,21 @@ export class App extends React.Component<AppProps, AppState> {
   //   return false;
   // }
 
-  async loadReleaseNotes() {
-    const response = await fetch("notes/notes.md");
-    const src = await response.text();
-    const notes = new File("Release Notes", FileType.Markdown);
-    notes.setData(src);
-    openFile(notes, defaultViewTypeForFileType(notes.type));
-  }
+  // async loadReleaseNotes() {
+  //   const response = await fetch("notes/notes.md");
+  //   const src = await response.text();
+  //   const notes = new File("Release Notes", FileType.Markdown);
+  //   notes.setData(src);
+  //   openFile(notes, defaultViewTypeForFileType(notes.type));
+  // }
 
-  async loadHelp() {
-    const response = await fetch("notes/help.md");
-    const src = await response.text();
-    const help = new File("Help", FileType.Markdown);
-    help.setData(src);
-    openFile(help, defaultViewTypeForFileType(help.type));
-  }
+  // async loadHelp() {
+  //   const response = await fetch("notes/help.md");
+  //   const src = await response.text();
+  //   const help = new File("Help", FileType.Markdown);
+  //   help.setData(src);
+  //   openFile(help, defaultViewTypeForFileType(help.type));
+  // }
 
   // private publishArc(): Promise<void> {
   //   if (this.state.isContentModified) {
@@ -460,53 +461,54 @@ export class App extends React.Component<AppProps, AppState> {
         />
       );
     }
-    if (this.props.embeddingParams.type === EmbeddingType.None ||
-        this.props.embeddingParams.type === EmbeddingType.Arc) {
-      toolbarButtons.push(
-        <Button
-          key="ForkProject"
-          icon={<GoRepoForked />}
-          label="Fork"
-          title="Fork Project"
-          isDisabled={this.toolbarButtonsAreDisabled()}
-          onClick={() => {
-            this.fork();
-          }}
-        />
-      );
-    }
+    // if (this.props.embeddingParams.type === EmbeddingType.None ||
+    //     this.props.embeddingParams.type === EmbeddingType.Arc) {
+    //   toolbarButtons.push(
+    //     <Button
+    //       key="ForkProject"
+    //       icon={<GoRepoForked />}
+    //       label="Fork"
+    //       title="Fork Project"
+    //       isDisabled={this.toolbarButtonsAreDisabled()}
+    //       onClick={() => {
+    //         this.fork();
+    //       }}
+    //     />
+    //   );
+    // }
     if (this.props.embeddingParams.type === EmbeddingType.None) {
       toolbarButtons.push(
-        <Button
-          key="CreateGist"
-          icon={<GoGist />}
-          label="Create Gist"
-          title="Create GitHub Gist from Project"
-          isDisabled={this.toolbarButtonsAreDisabled()}
-          onClick={() => {
-            this.gist();
-          }}
-        />,
-        <Button
-          key="Download"
-          icon={<GoDesktopDownload />}
-          label="Download"
-          title="Download Project"
-          isDisabled={this.toolbarButtonsAreDisabled()}
-          onClick={() => {
-            this.download();
-          }}
-        />,
-        <Button
-          key="Share"
-          icon={<GoRocket />}
-          label="Share"
-          title={this.state.fiddle ? "Share Project" : "Cannot share a project that has not been forked yet."}
-          isDisabled={this.toolbarButtonsAreDisabled() || !this.state.fiddle}
-          onClick={() => {
-            this.share();
-          }}
-        />);
+        // <Button
+        //   key="CreateGist"
+        //   icon={<GoGist />}
+        //   label="Create Gist"
+        //   title="Create GitHub Gist from Project"
+        //   isDisabled={this.toolbarButtonsAreDisabled()}
+        //   onClick={() => {
+        //     this.gist();
+        //   }}
+        // />,
+        // <Button
+        //   key="Download"
+        //   icon={<GoDesktopDownload />}
+        //   label="Download"
+        //   title="Download Project"
+        //   isDisabled={this.toolbarButtonsAreDisabled()}
+        //   onClick={() => {
+        //     this.download();
+        //   }}
+        // />,
+        // <Button
+        //   key="Share"
+        //   icon={<GoRocket />}
+        //   label="Share"
+        //   title={this.state.fiddle ? "Share Project" : "Cannot share a project that has not been forked yet."}
+        //   isDisabled={this.toolbarButtonsAreDisabled() || !this.state.fiddle}
+        //   onClick={() => {
+        //     this.share();
+        //   }}
+        // />
+        );
     }
     // toolbarButtons.push(
     //   <Button

@@ -36,22 +36,27 @@ export class NewDirectoryDialog extends React.Component<{
   onCancel: () => void;
 }, {
     name: string;
+    nameError: string;
   }> {
   constructor(props: any) {
     super(props);
     this.state = {
-      name: ""
+      name: "",
+      nameError: ""
     };
+    this.onChangeName = this.onChangeName.bind(this);
   }
-  onChangeName = (event: ChangeEvent<any>) => {
-    this.setState({ name: event.target.value });
+  async onChangeName(event: ChangeEvent<any>) {
+    const name = event.target.value;
+    const err = await this.nameError(name);
+    this.setState({ name: name, nameError: err });
   }
-  nameError() {
+  async nameError(name: string) {
     const directory = this.props.directory;
-    if (this.state.name) {
+    if (name) {
       if (!/^[a-z0-9\.\-\_]+$/i.test(this.state.name)) {
         return "Illegal characters in directory name.";
-      } else if (directory && appStore.getImmediateChild(directory, this.state.name)) {
+      } else if (directory && (await appStore.getImmediateChild(directory, this.state.name))) {
         return `Directory '${this.state.name}' already exists.`;
       }
     }
@@ -73,7 +78,7 @@ export class NewDirectoryDialog extends React.Component<{
           Create New Directory
         </div>
         <div style={{ flex: 1, padding: "8px" }}>
-          <TextInputBox label="Name:" error={this.nameError()} value={this.state.name} onChange={this.onChangeName}/>
+          <TextInputBox label="Name:" error={this.state.nameError} value={this.state.name} onChange={this.onChangeName}/>
         </div>
         <div>
           <Button
@@ -88,10 +93,11 @@ export class NewDirectoryDialog extends React.Component<{
             icon={<GoFile />}
             label={this.createButtonLabel()}
             title="Create New Directory"
-            isDisabled={!this.state.name || !!this.nameError()}
+            isDisabled={!this.state.name || !!this.state.nameError}
             onClick={() => {
-              // const directory = new Directory(this.state.name);
-              // return this.props.onCreate && this.props.onCreate(directory);
+              console.log(this.state);
+              const directory = new Directory(this.state.name, "");
+              return this.props.onCreate && this.props.onCreate(directory);
             }}
           />
         </div>

@@ -39,7 +39,7 @@ export class EventDispatcher {
     this.callbacks.splice(i, 1);
   }
   dispatch(target?: any) {
-    // console.log("Dispatching " + this.name);
+    console.log("Dispatching " + this.name);
     this.callbacks.forEach(callback => {
       callback(target);
     });

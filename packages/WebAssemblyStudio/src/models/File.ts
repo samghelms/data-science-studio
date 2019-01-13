@@ -34,7 +34,7 @@ export class File {
   buffer: monaco.editor.ITextModel;
   contentsManager: ContentsManager;
   data: string | ArrayBuffer;
-  parent: Directory;
+  parent: Directory | null;
   onClose?: Function;
   /**
    * True if the buffer is out of sync with the data.
@@ -59,11 +59,12 @@ export class File {
   bufferType: FileType;
   description: string;
   problems: Problem[] = [];
-  constructor(name: string, type: FileType, contentsManager?: ContentsManager) {
+  constructor(name: string, type: FileType, contentsManager?: ContentsManager, parent: Directory = null) {
     this.name = name;
     this.type = type;
     this.data = null;
     this.contentsManager = contentsManager;
+    this.parent = parent;
     if (type === FileType.JupyterNotebook) {
       this.bufferType = FileType.JupyterNotebook;
       // this.notebook = {};
@@ -77,13 +78,13 @@ export class File {
       }
       this.buffer.updateOptions({ tabSize: 2, insertSpaces: true });
       this.buffer.onDidChangeContent((e) => {
-        console.log("buffer changed");
         // isFlush is only true for buffer.setValue() calls and the isDirty logic is handled at those
         // call sites, here we only care for user edits.
         if (e.isFlush) {
           return;
         }
         if (!this.isDirty) {
+          console.log("notifying dirty");
           this.isDirty = true;
           this.notifyDidChangeDirty();
         }
@@ -91,7 +92,7 @@ export class File {
         monaco.editor.setModelMarkers(this.buffer, "compiler", []);
       });
     }
-    this.parent = null;
+    // this.parent = null;
   }
   setNameAndDescription(name: string, description: string) {
     this.name = name;
@@ -138,8 +139,8 @@ export class File {
       this.description = "This .wasm file is editable as a .wat file, and is automatically reassembled to .wasm when saved.";
       return;
     } else if (this.type === FileType.JupyterNotebook) {
-      console.log("update buffer called");
-      // this.buffer
+      this.resetDirty();
+      this.notifyDidChangeBuffer();
     } else {
       this.buffer.setValue(this.data as string);
       this.resetDirty();
@@ -229,6 +230,7 @@ export class File {
       }
     } else {
       this.data = this.buffer.getValue();
+      this.contentsManager.save(this.name, {content: this.data, format: "text", type: "file"});
       this.resetDirty();
     }
     this.notifyDidChangeData();

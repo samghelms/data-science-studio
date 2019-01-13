@@ -218,9 +218,9 @@ export async function openProjectFiles(template: Template) {
     type: AppActionType.LOAD_PROJECT,
     project: newProject
   } as LoadProjectAction);
-  if (newProject.getFile("README.md")) {
-    openFiles([["README.md"]]);
-  }
+  // if (newProject.getFile("README.md")) {
+  //   openFiles([["README.md"]]);
+  // }
 }
 
 // async function handleF(fileOrFolder: any, prefix: string, contentsManager: ContentsManager): Promise<string[]> {
@@ -249,9 +249,9 @@ export async function openProjectFromJupyterServer(options: ServerConnection.ISe
     type: AppActionType.LOAD_PROJECT,
     project: newProject
   } as LoadProjectAction);
-  if (newProject.getFile("README.md")) {
-    openFiles([["README.md"]]);
-  }
+  // if (newProject.getFile("README.md")) {
+  //   openFiles([["README.md"]]);
+  // }
 }
 
 export async function saveProject(fiddle: string): Promise<string> {

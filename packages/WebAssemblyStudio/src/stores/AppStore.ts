@@ -46,6 +46,7 @@ import Group from "../utils/group";
 import { assert } from "../util";
 import { ViewType, View, defaultViewTypeForFileType } from "../components/editor/View";
 import { SessionManager, ServiceManager } from "@jupyterlab/services";
+import { NotebookPanel } from "@jupyterlab/notebook";
 
 export class AppStore {
   private project: Project;
@@ -94,13 +95,18 @@ export class AppStore {
     this.project.onDidChangeStatus.register(() => this.onDidChangeStatus.dispatch());
     this.project.onDidChangeProblems.register(() => this.onDidChangeProblems.dispatch());
     this.project.onChange.register(() => this.onChange.dispatch());
-    this.project.onDirtyFileUsed.register((file: File) => this.onDirtyFileUsed.dispatch(file));
+    this.project.onDirtyFileUsed.register((file: File) => {
+      console.log("dirty file used"); this.onDirtyFileUsed.dispatch(file);
+    });
     this.project.onDidChangeBuffer.register(() => this.onDidChangeBuffer.dispatch());
     this.project.onDidChangeData.register(() => {
       this.setContentModified(true);
       this.onDidChangeData.dispatch();
     });
-    this.project.onDidChangeDirty.register((file: File) => this.onDidChangeDirty.dispatch(file));
+    this.project.onDidChangeDirty.register((file: File) => {
+      console.log("ondidchangedirty");
+      this.onDidChangeDirty.dispatch(file);
+    });
     this.project.onDidChangeChildren.register(() => {
       this.setContentModified(true);
       this.onDidChangeChildren.dispatch();
@@ -123,6 +129,7 @@ export class AppStore {
   }
 
   private deleteFile(file: File) {
+    console.log(file);
     file.parent.removeFile(file);
   }
 
@@ -182,8 +189,8 @@ export class AppStore {
     return this.project.getStatus();
   }
 
-  public getServiceManager(): ServiceManager {
-    return this.project.serviceManager;
+  public getNBWidget(filename: string): NotebookPanel {
+    return this.project.openNotebook(filename);
   }
 
   public hasStatus() {

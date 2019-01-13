@@ -1,0 +1,6 @@
+.p-Widget {
+    box-sizing: border-box;
+    position: relative;
+    overflow: auto !important;
+    cursor: default;
+}

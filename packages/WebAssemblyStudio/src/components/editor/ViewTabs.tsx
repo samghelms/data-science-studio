@@ -109,11 +109,16 @@ export class ViewTabs extends React.Component<ViewTabsProps, ViewTabsState> {
   }
 
   componentDidMount() {
-    appStore.onDidChangeDirty.register(this.onFileDidChangeDirty);
+    if (this.props.view && this.props.view.file) {
+      console.log("registering onDidChangeDirty");
+      this.props.view.file.onDidChangeDirty.register(this.onFileDidChangeDirty);
+    }
   }
 
   componentWillUnmount() {
-    appStore.onDidChangeDirty.unregister(this.onFileDidChangeDirty);
+    if (this.props.view && this.props.view.file) {
+      this.props.view.file.onDidChangeDirty.unregister(this.onFileDidChangeDirty);
+    }
   }
 
   componentWillReceiveProps(nextProps: ViewTabsProps) {
@@ -121,10 +126,17 @@ export class ViewTabs extends React.Component<ViewTabsProps, ViewTabsState> {
       this.setState({
         isActiveViewFileDirty: isViewFileDirty(nextProps.view)
       });
+      if (this.props.view && this.props.view.file) {
+        this.props.view.file.onDidChangeDirty.unregister(this.onFileDidChangeDirty);
+      }
+      if (nextProps.view && nextProps.view.file) {
+        nextProps.view.file.onDidChangeDirty.register(this.onFileDidChangeDirty);
+      }
     }
   }
 
   onFileDidChangeDirty = () => {
+    console.log("dirty file change detected");
     this.setState({
       isActiveViewFileDirty: isViewFileDirty(this.props.view)
     });
@@ -137,6 +149,7 @@ export class ViewTabs extends React.Component<ViewTabsProps, ViewTabsState> {
         key="split"
         icon={<GoBook />}
         title="Split Editor"
+        isDisabled={view.file.type === FileType.JupyterNotebook}
         onClick={() => {
           return this.props.onSplitViews();
         }}
@@ -194,8 +207,7 @@ export class ViewTabs extends React.Component<ViewTabsProps, ViewTabsState> {
     } else if (view.type === ViewType.Binary) {
       viewer = <BinaryView view={view} />;
     } else if (view.type === ViewType.JupyterNotebook) {
-        console.log("changing jupyter biew");
-        viewer = <JupyterNotebookView view={view} manager={appStore.getServiceManager()} />;
+        viewer = <JupyterNotebookView view={view} />;
     } else if (file) {
       viewer = <EditorView view={view} options={{ readOnly: file.isBufferReadOnly }} />;
     } else {

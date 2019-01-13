@@ -23,9 +23,25 @@ import { assert } from "../util";
 import { EventDispatcher } from "./EventDispatcher";
 import { Directory } from "./Directory";
 import { ContentsManager, ServiceManager } from "@jupyterlab/services";
+import { CommandRegistry } from "@phosphor/commands";
+import {
+  RenderMimeRegistry,
+  standardRendererFactories as initialFactories
+} from "@jupyterlab/rendermime";
+import { CommandPalette, Widget } from "@phosphor/widgets";
+import { DocumentManager } from "@jupyterlab/docmanager";
+import { DocumentRegistry } from "@jupyterlab/docregistry";
+import {
+  NotebookPanel,
+  NotebookWidgetFactory,
+  NotebookModelFactory,
+  NotebookActions
+} from "@jupyterlab/notebook";
+import { editorServices } from "@jupyterlab/codemirror";
 
 export class Project extends Directory {
   serviceManager: ServiceManager;
+  docManager: DocumentManager;
   onDidChangeStatus = new EventDispatcher("Status Change");
   onChange = new EventDispatcher("Project Change");
   onDirtyFileUsed = new EventDispatcher("Dirty File Used");
@@ -33,6 +49,40 @@ export class Project extends Directory {
   constructor(contentsManager?: ContentsManager, serviceManager?: ServiceManager) {
     super("Project", "", contentsManager);
     this.serviceManager = serviceManager;
+
+    if (serviceManager) {
+      const rendermime = new RenderMimeRegistry({ initialFactories });
+
+      const opener = {
+          open: (widget: Widget) => {
+          // Do nothing for sibling widgets for now.
+          }
+      };
+      const docRegistry = new DocumentRegistry();
+      this.docManager = new DocumentManager({
+          registry: docRegistry,
+          manager: serviceManager,
+          opener
+      });
+      const mFactory = new NotebookModelFactory({});
+      const editorFactory = editorServices.factoryService.newInlineEditor;
+      const contentFactory = new NotebookPanel.ContentFactory({ editorFactory });
+
+      const wFactory = new NotebookWidgetFactory({
+          name: "Notebook",
+          modelName: "notebook",
+          fileTypes: ["notebook"],
+          defaultFor: ["notebook"],
+          preferKernel: true,
+          canStartKernel: true,
+          rendermime,
+          contentFactory,
+          mimeTypeService: editorServices.mimeTypeService
+      });
+
+      docRegistry.addModelFactory(mFactory);
+      docRegistry.addWidgetFactory(wFactory);
+    }
   }
 
   private status: string [] = ["Idle"];
@@ -53,5 +103,9 @@ export class Project extends Directory {
     assert(this.status.length);
     this.status.pop();
     this.onDidChangeStatus.dispatch();
+  }
+  openNotebook(fileName: string) {
+    const nbWidget = this.docManager.openOrReveal(fileName) as NotebookPanel;
+    return nbWidget;
   }
 }

@@ -60,17 +60,24 @@ export class MarkdownView extends React.Component<MarkdownViewProps, {
 }> {
   constructor(props: MarkdownViewProps) {
     super(props);
+    console.log("markdown view created");
     this.state = {
       markdown: this.props.view.file.buffer.getValue()
     };
   }
   onDidChangeBuffer = () => {
     this.setState({
-      markdown: this.props.view.file.buffer.getValue()
+      markdown: this.props.view.file.buffer.getValue() // TODO: I'm not sure if the buffer in the file model is being updated
     });
   }
-  componentDidMount() {
+  async componentDidMount() {
     this.props.view.file.onDidChangeBuffer.register(this.onDidChangeBuffer);
+    if (this.props.view.file.contentsManager) {
+      await this.props.view.file.requestServerForFileData();
+      this.setState({
+        markdown: this.props.view.file.buffer.getValue()
+      });
+    }
   }
   componentWillUnmount() {
     this.props.view.file.onDidChangeBuffer.unregister(this.onDidChangeBuffer);

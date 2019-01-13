@@ -41,7 +41,8 @@ export enum FileType {
   JSON       = "json",
   DOT        = "dot",
   TOML       = "toml",
-  Unknown    = "unknown"
+  Unknown    = "unknown",
+  Python     = "python"
 }
 
 export interface SandboxRun {
@@ -93,6 +94,8 @@ export function languageForFileType(type: FileType): string {
     return "dot";
   } else if (type === FileType.TOML) {
     return "toml";
+  } else if (type === FileType.Python) {
+    return "python";
   }
   return "";
 }
@@ -126,6 +129,8 @@ export function nameForFileType(type: FileType): string {
     return "DOT";
   } else if (type === FileType.TOML) {
     return "TOML";
+  } else if (type === FileType.Python) {
+    return "Python";
   }
   return "";
 }
@@ -159,6 +164,8 @@ export function extensionForFileType(type: FileType): string {
     return "dot";
   } else if (type === FileType.TOML) {
     return "toml";
+  } else if (type === FileType.Python) {
+    return "py";
   }
   return "";
 }
@@ -196,6 +203,8 @@ export function fileTypeForExtension(extension: string): FileType {
     return FileType.DOT;
   } else if (extension === "toml") {
     return FileType.TOML;
+  } else if (extension === "py") {
+    return FileType.Python;
   }
   return null;
 }

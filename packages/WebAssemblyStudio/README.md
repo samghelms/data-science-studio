@@ -1,4 +1,4 @@
-WebAssembly Studio
+Data Science Studio
 ====
 [![Build Status](https://travis-ci.org/wasdk/WebAssemblyStudio.svg?branch=master)](https://travis-ci.org/wasdk/WebAssemblyStudio) [![Coverage Status](https://coveralls.io/repos/github/wasdk/WebAssemblyStudio/badge.svg)](https://coveralls.io/github/wasdk/WebAssemblyStudio) [![Maintainance Status](https://img.shields.io/badge/maintained-seldom-yellowgreen.svg)](https://github.com/wasdk/WebAssemblyStudio/issues/381)
 
@@ -64,7 +64,7 @@ This project depends on several excellent libraries and tools:
 ## Dev scratch pad:
 
 notebook for testing
-jupyter notebook --ip='*' --NotebookApp.token='' --NotebookApp.password='' --NotebookApp.allow_origin=*
+jupyter notebook --NotebookApp.allow_origin=*
 
 ### TODOS
 
@@ -73,3 +73,10 @@ jupyter notebook --ip='*' --NotebookApp.token='' --NotebookApp.password='' --Not
 3. add type detection for .py, .js, .yaml, .yml, .json, .ts, .tsx, .c, .cpp, etc. (maybe find the vscode library for this)
 4. add the markdown notebooks
 5. add search functionality
+6. Implement 
+7. Fix up jupyter backend interfaces (decide whether closing a tab should also shut down a notebook)
+8. Add a publish option for use with airbnb knowledge repo instances
+9. Workflow building tool for use with airflow
+10. Allow creating new files, folders and deleting files, folders
+11. folders and files can't have the same name -- (is this true of a unix file system as well??)
+12. Save state of file tree before/after file and folder addition/deletion

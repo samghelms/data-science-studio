@@ -61,7 +61,7 @@ export default class Group {
     }
   }
   openFile(file: File, type: ViewType = ViewType.Editor, preview = true) {
-    const index =  this.views.findIndex(view => view.file === file && view.type === type);
+    const index = this.views.findIndex(view => view.file === file && view.type === type);
     const view = (index >= 0) ? this.views[index] : new View(file, type);
     this.open(view, preview);
   }
