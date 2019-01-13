@@ -32,11 +32,10 @@ export class Directory extends File {
   base: string;
   contentsManager: ContentsManager;
   parent: Directory;
-  // children: File[] = [];
   isOpen: boolean = true;
   readonly onDidChangeChildren = new EventDispatcher("Directory Changed ");
   constructor(name: string, base: string, contentsManager?: ContentsManager, parent: Directory = null) {
-    super(name, FileType.Directory);
+    super(name, FileType.Directory, contentsManager, parent);
     this.contentsManager = contentsManager;
     this.base = base;
     this.parent = parent;
@@ -47,9 +46,9 @@ export class Directory extends File {
         return contents.content.map((f: any) => {
           const base = this.base + (this.base.length > 0 ? "/" : "") + f.name;
           if (f.type === "file") {
-            return new File(base, fileTypeFromFileName(f.name), this.contentsManager, this);
+            return new File(f.name, fileTypeFromFileName(f.name), this.contentsManager, this);
           } else if (f.type === "notebook") {
-            return new File(base, FileType.JupyterNotebook, this.contentsManager, this);
+            return new File(f.name, FileType.JupyterNotebook, this.contentsManager, this);
           } else {
             const folderBase = this.base + (this.base.length > 1 ? "/" : "") + f.name;
             return new Directory(f.name, folderBase, this.contentsManager, this);
@@ -117,10 +116,7 @@ export class Directory extends File {
     if ((await this.getImmediateChild(file.name))) {
       file.name = await this.handleNameCollision(file.name, file instanceof Directory);
     }
-    // this.children.push(file); // TODO: actually implement this
     if (this.contentsManager) {
-      const type = file.type === FileType.JupyterNotebook ? "notebook" : "file";
-      const fInfo = { path: "", type: type, ext: extensionForFileType(file.type) };
       const getType = (file: File) => {
         if (file instanceof Directory) {
           return "directory";
@@ -129,11 +125,12 @@ export class Directory extends File {
         }
         return "file";
       };
-      const outerThis = this;
-      const path = await this.contentsManager.newUntitled({ path: "", type: getType(file), ext: extensionForFileType(file.type) }).then(model => {
+      const path = await this.contentsManager.newUntitled({ path: this.base, type: getType(file), ext: extensionForFileType(file.type) }).then(model => {
         return model.path;
       });
-      await outerThis.contentsManager.rename(path, file.name);
+      const name = this.base.length  > 0 ? this.base + "/" + file.name : file.name;
+      this.contentsManager.rename(path, name); // TODO: handle name collisions
+      console.log(path);
     }
     file.parent = this;
     this.notifyDidChangeChildren(file);
@@ -142,49 +139,41 @@ export class Directory extends File {
     const children = await this.children();
     assert(file.parent === this);
     const i = children.indexOf(file);
-    // console.log()
-    // assert(i >= 0);
-    // children.splice(i, 1); // TODO: actually implement this
-    await this.contentsManager.delete(file.name);
+    await this.contentsManager.delete(file.jupyterName);
     file.parent = null;
     this.notifyDidChangeChildren(file);
   }
-  async newDirectory(path: string | string[]): Promise<Directory> {
-    if (typeof path === "string") {
-      path = path.split("/");
-    }
-    let directory: Directory = this;
-    while (path.length) {
-      const name = path.shift();
-      let file = await directory.getImmediateChild(name);
-      if (file) {
-        directory = file as Directory;
-      } else {
-        file = new Directory(name, name, this.contentsManager);
-        directory.addFile(file);
-        directory = file as Directory;
-      }
-    }
+  async newDirectory(dirName: string): Promise<Directory> {
+    // if (typeof path === "string") {
+    //   path = path.split("/");
+    // }
+    // let directory: Directory = this;
+    const file = new Directory(dirName, name, this.contentsManager);
+    this.addFile(file);
+    const directory = file as Directory;
+    // while (path.length) {
+    //   const name = path.shift();
+    //   let file = await directory.getImmediateChild(name);
+    //   if (file) {
+    //     directory = file as Directory;
+    //   } else {
+    //     file = new Directory(name, name, this.contentsManager);
+    //     directory.addFile(file);
+    //     directory = file as Directory;
+    //   }
+    // }
     assert(directory instanceof Directory);
     return directory;
   }
-  async newFile(path: string | string[], type: FileType, isTransient = false, handleNameCollision = false): Promise<File> {
-    if (typeof path === "string") {
-      path = path.split("/");
-    }
-    let directory: Directory = this;
-    if (path.length > 1) {
-      directory = await this.newDirectory(path.slice(0, path.length - 1));
-    }
-    const name = path[path.length - 1];
-    let file = await directory.getFile(name);
-    if (file && !handleNameCollision) {
-      assert(file.type === type);
+  async newFile(name: string, type: FileType): Promise<File> {
+    let file;
+    if (type === FileType.Directory) {
+      file = new Directory(name, this.jupyterName, this.contentsManager);
+      this.addFile(file);
     } else {
-      file = new File(path[path.length - 1], type);
-      directory.addFile(file);
+      file = new File(name, type, this.contentsManager);
+      this.addFile(file);
     }
-    file.isTransient = isTransient;
     return file;
   }
   async getImmediateChild(name: string): Promise<File> {

@@ -290,12 +290,12 @@ export class Service {
     return result;
   }
 
-  static async disassembleWasmWithWabt(file: File, status?: IStatusProvider) {
-    const result = await Service.disassembleWasm(file.getData() as ArrayBuffer, status);
-    const output = await file.parent.newFile(file.name + ".wat", FileType.Wat);
-    output.description = "Disassembled from " + file.name + " using Wabt.";
-    output.setData(result);
-  }
+  // static async disassembleWasmWithWabt(file: File, status?: IStatusProvider) {
+  //   const result = await Service.disassembleWasm(file.getData() as ArrayBuffer, status);
+  //   const output = await file.parent.newFile(file.name + ".wat", FileType.Wat);
+  //   output.description = "Disassembled from " + file.name + " using Wabt.";
+  //   output.setData(result);
+  // }
 
   static async assembleWat(wat: string, status?: IStatusProvider): Promise<ArrayBuffer> {
     gaEvent("assemble", "Service", "wabt");
@@ -311,12 +311,12 @@ export class Service {
     return result;
   }
 
-  static async assembleWatWithWabt(file: File, status?: IStatusProvider) {
-    const result = await Service.assembleWat(file.getData() as string, status);
-    const output = await file.parent.newFile(file.name + ".wasm", FileType.Wasm);
-    output.description = "Assembled from " + file.name + " using Wabt.";
-    output.setData(result);
-  }
+  // static async assembleWatWithWabt(file: File, status?: IStatusProvider) {
+  //   const result = await Service.assembleWat(file.getData() as string, status);
+  //   const output = await file.parent.newFile(file.name + ".wasm", FileType.Wasm);
+  //   output.description = "Assembled from " + file.name + " using Wabt.";
+  //   output.setData(result);
+  // }
 
   static async createGist(json: object): Promise<string> {
     const url = "https://api.github.com/gists";
@@ -405,28 +405,28 @@ export class Service {
     }, uri);
   }
 
-  static async loadFilesIntoProject(files: IFiddleFile[], project: Project, base: URL = null): Promise<any> {
-    for (const f of files) {
-      const type = fileTypeFromFileName(f.name);
-      const file = await project.newFile(f.name, type, false);
-      let data: string | ArrayBuffer;
-      if (f.data) {
-        if (f.type === "binary") {
-          data = decodeRestrictedBase64ToBytes(f.data).buffer as ArrayBuffer;
-        } else {
-          data = f.data;
-        }
-      } else {
-        const request = await fetch(new URL(f.name, base).toString());
-        if (f.type === "binary") {
-          data = await request.arrayBuffer();
-        } else {
-          data = await request.text();
-        }
-      }
-      file.setData(data);
-    }
-  }
+  // static async loadFilesIntoProject(files: IFiddleFile[], project: Project, base: URL = null): Promise<any> {
+  //   for (const f of files) {
+  //     const type = fileTypeFromFileName(f.name);
+  //     const file = await project.newFile(f.name, type, false);
+  //     let data: string | ArrayBuffer;
+  //     if (f.data) {
+  //       if (f.type === "binary") {
+  //         data = decodeRestrictedBase64ToBytes(f.data).buffer as ArrayBuffer;
+  //       } else {
+  //         data = f.data;
+  //       }
+  //     } else {
+  //       const request = await fetch(new URL(f.name, base).toString());
+  //       if (f.type === "binary") {
+  //         data = await request.arrayBuffer();
+  //       } else {
+  //         data = await request.text();
+  //       }
+  //     }
+  //     file.setData(data);
+  //   }
+  // }
 
   static lazyLoad(uri: string, status?: IStatusProvider): Promise<any> {
     return new Promise((resolve, reject) => {
@@ -466,49 +466,49 @@ export class Service {
     return !!result;
   }
 
-  static async getWasmCallGraphWithBinaryen(file: File, status?: IStatusProvider) {
-    gaEvent("call-graph", "Service", "binaryen");
-    const data = file.getData() as ArrayBuffer;
-    status && status.push("Creating Call Graph with Binaryen");
-    const result = await this.worker.createWasmCallGraphWithBinaryen(data);
-    status && status.pop();
-    const output = await file.parent.newFile(file.name + ".dot", FileType.DOT);
-    output.description = "Call graph created from " + file.name + " using Binaryen's print-call-graph pass.";
-    output.setData(result);
-  }
+  // static async getWasmCallGraphWithBinaryen(file: File, status?: IStatusProvider) {
+  //   gaEvent("call-graph", "Service", "binaryen");
+  //   const data = file.getData() as ArrayBuffer;
+  //   status && status.push("Creating Call Graph with Binaryen");
+  //   const result = await this.worker.createWasmCallGraphWithBinaryen(data);
+  //   status && status.pop();
+  //   const output = await file.parent.newFile(file.name + ".dot", FileType.DOT);
+  //   output.description = "Call graph created from " + file.name + " using Binaryen's print-call-graph pass.";
+  //   output.setData(result);
+  // }
 
-  static async disassembleWasmWithBinaryen(file: File, status?: IStatusProvider) {
-    gaEvent("disassemble", "Service", "binaryen");
-    const data = file.getData() as ArrayBuffer;
-    status && status.push("Disassembling with Binaryen");
-    const result = await this.worker.disassembleWasmWithBinaryen(data);
-    status && status.pop();
-    const output = await file.parent.newFile(file.name + ".wat", FileType.Wat);
-    output.description = "Disassembled from " + file.name + " using Binaryen.";
-    output.setData(result);
-  }
+  // static async disassembleWasmWithBinaryen(file: File, status?: IStatusProvider) {
+  //   gaEvent("disassemble", "Service", "binaryen");
+  //   const data = file.getData() as ArrayBuffer;
+  //   status && status.push("Disassembling with Binaryen");
+  //   const result = await this.worker.disassembleWasmWithBinaryen(data);
+  //   status && status.pop();
+  //   const output = await file.parent.newFile(file.name + ".wat", FileType.Wat);
+  //   output.description = "Disassembled from " + file.name + " using Binaryen.";
+  //   output.setData(result);
+  // }
 
-  static async convertWasmToAsmWithBinaryen(file: File, status?: IStatusProvider) {
-    gaEvent("asm.js", "Service", "binaryen");
-    const data = file.getData() as ArrayBuffer;
-    status && status.push("Converting to asm.js with Binaryen");
-    const result = await this.worker.convertWasmToAsmWithBinaryen(data);
-    status && status.pop();
-    const output = await file.parent.newFile(file.name + ".asm.js", FileType.JavaScript);
-    output.description = "Converted from " + file.name + " using Binaryen.";
-    output.setData(result);
-  }
+  // static async convertWasmToAsmWithBinaryen(file: File, status?: IStatusProvider) {
+  //   gaEvent("asm.js", "Service", "binaryen");
+  //   const data = file.getData() as ArrayBuffer;
+  //   status && status.push("Converting to asm.js with Binaryen");
+  //   const result = await this.worker.convertWasmToAsmWithBinaryen(data);
+  //   status && status.pop();
+  //   const output = await file.parent.newFile(file.name + ".asm.js", FileType.JavaScript);
+  //   output.description = "Converted from " + file.name + " using Binaryen.";
+  //   output.setData(result);
+  // }
 
-  static async assembleWatWithBinaryen(file: File, status?: IStatusProvider) {
-    gaEvent("assemble", "Service", "binaryen");
-    const data = file.getData() as string;
-    status && status.push("Assembling with Binaryen");
-    const result = await this.worker.assembleWatWithBinaryen(data);
-    status && status.pop();
-    const output = await file.parent.newFile(file.name + ".wasm", FileType.Wasm);
-    output.description = "Converted from " + file.name + " using Binaryen.";
-    output.setData(result);
-  }
+  // static async assembleWatWithBinaryen(file: File, status?: IStatusProvider) {
+  //   gaEvent("assemble", "Service", "binaryen");
+  //   const data = file.getData() as string;
+  //   status && status.push("Assembling with Binaryen");
+  //   const result = await this.worker.assembleWatWithBinaryen(data);
+  //   status && status.pop();
+  //   const output = await file.parent.newFile(file.name + ".wasm", FileType.Wasm);
+  //   output.description = "Converted from " + file.name + " using Binaryen.";
+  //   output.setData(result);
+  // }
 
   static downloadLink: HTMLAnchorElement = null;
   static download(file: File) {
@@ -550,66 +550,66 @@ export class Service {
     }
   }
 
-  static async disassembleX86(file: File, status?: IStatusProvider, options = "") {
-    gaEvent("disassemble", "Service", "capstone.x86");
-    if (typeof capstone === "undefined") {
-      await Service.lazyLoad("lib/capstone.x86.min.js", status);
-    }
-    const output = await file.parent.newFile(file.name + ".x86", FileType.x86);
+  // static async disassembleX86(file: File, status?: IStatusProvider, options = "") {
+  //   gaEvent("disassemble", "Service", "capstone.x86");
+  //   if (typeof capstone === "undefined") {
+  //     await Service.lazyLoad("lib/capstone.x86.min.js", status);
+  //   }
+  //   const output = await file.parent.newFile(file.name + ".x86", FileType.x86);
 
-    function toBytes(a: any) {
-      return a.map(function(x: any) { return padLeft(Number(x).toString(16), 2, "0"); }).join(" ");
-    }
+  //   function toBytes(a: any) {
+  //     return a.map(function(x: any) { return padLeft(Number(x).toString(16), 2, "0"); }).join(" ");
+  //   }
 
-    const service = await createCompilerService(Language.Wasm, Language.x86);
-    const input = {
-      files: {
-        "in.wasm": {
-          content: file.getData(),
-        },
-      },
-      options,
-    };
-    const result = await service.compile(input);
-    const json: any = result.items["a.json"].content;
-    let s = "";
-    const cs = new capstone.Cs(capstone.ARCH_X86, capstone.MODE_64);
-    const annotations: any[] = [];
-    const assemblyInstructionsByAddress = Object.create(null);
-    for (let i = 0; i < json.regions.length; i++) {
-      const region = json.regions[i];
-      s += region.name + ":\n";
-      const csBuffer = decodeRestrictedBase64ToBytes(region.bytes);
-      const instructions = cs.disasm(csBuffer, region.entry);
-      const basicBlocks: any = {};
-      instructions.forEach(function(instr: any, i: any) {
-        assemblyInstructionsByAddress[instr.address] = instr;
-        if (isBranch(instr)) {
-          const targetAddress = parseInt(instr.op_str, 10);
-          if (!basicBlocks[targetAddress]) {
-            basicBlocks[targetAddress] = [];
-          }
-          basicBlocks[targetAddress].push(instr.address);
-          if (i + 1 < instructions.length) {
-            basicBlocks[instructions[i + 1].address] = [];
-          }
-        }
-      });
-      instructions.forEach(function(instr: any) {
-        if (basicBlocks[instr.address]) {
-          s += " " + padRight(toAddress(instr.address) + ":", 39, " ");
-          if (basicBlocks[instr.address].length > 0) {
-            s += "; " + toAddress(instr.address) + " from: [" + basicBlocks[instr.address].map(toAddress).join(", ") + "]";
-          }
-          s += "\n";
-        }
-        s += "  " + padRight(instr.mnemonic + " " + instr.op_str, 38, " ");
-        s += "; " + toAddress(instr.address) + " " + toBytes(instr.bytes) + "\n";
-      });
-      s += "\n";
-    }
-    output.setData(s);
-  }
+  //   const service = await createCompilerService(Language.Wasm, Language.x86);
+  //   const input = {
+  //     files: {
+  //       "in.wasm": {
+  //         content: file.getData(),
+  //       },
+  //     },
+  //     options,
+  //   };
+  //   const result = await service.compile(input);
+  //   const json: any = result.items["a.json"].content;
+  //   let s = "";
+  //   const cs = new capstone.Cs(capstone.ARCH_X86, capstone.MODE_64);
+  //   const annotations: any[] = [];
+  //   const assemblyInstructionsByAddress = Object.create(null);
+  //   for (let i = 0; i < json.regions.length; i++) {
+  //     const region = json.regions[i];
+  //     s += region.name + ":\n";
+  //     const csBuffer = decodeRestrictedBase64ToBytes(region.bytes);
+  //     const instructions = cs.disasm(csBuffer, region.entry);
+  //     const basicBlocks: any = {};
+  //     instructions.forEach(function(instr: any, i: any) {
+  //       assemblyInstructionsByAddress[instr.address] = instr;
+  //       if (isBranch(instr)) {
+  //         const targetAddress = parseInt(instr.op_str, 10);
+  //         if (!basicBlocks[targetAddress]) {
+  //           basicBlocks[targetAddress] = [];
+  //         }
+  //         basicBlocks[targetAddress].push(instr.address);
+  //         if (i + 1 < instructions.length) {
+  //           basicBlocks[instructions[i + 1].address] = [];
+  //         }
+  //       }
+  //     });
+  //     instructions.forEach(function(instr: any) {
+  //       if (basicBlocks[instr.address]) {
+  //         s += " " + padRight(toAddress(instr.address) + ":", 39, " ");
+  //         if (basicBlocks[instr.address].length > 0) {
+  //           s += "; " + toAddress(instr.address) + " from: [" + basicBlocks[instr.address].map(toAddress).join(", ") + "]";
+  //         }
+  //         s += "\n";
+  //       }
+  //       s += "  " + padRight(instr.mnemonic + " " + instr.op_str, 38, " ");
+  //       s += "; " + toAddress(instr.address) + " " + toBytes(instr.bytes) + "\n";
+  //     });
+  //     s += "\n";
+  //   }
+  //   output.setData(s);
+  // }
 
   private static binaryExplorerMessageListener: (e: any) => void;
 

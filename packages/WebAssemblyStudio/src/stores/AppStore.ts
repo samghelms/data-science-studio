@@ -121,11 +121,8 @@ export class AppStore {
     this.onDidChangeIsContentModified.dispatch();
   }
 
-  private addFileTo(file: File, parent: Directory) {
-    if (file.parent) {
-      this.deleteFile(file);
-    }
-    parent.addFile(file);
+  private addFileTo(fileName: string, fileType: FileType, parent: Directory) {
+    parent.newFile(fileName, fileType);
   }
 
   private deleteFile(file: File) {
@@ -354,8 +351,8 @@ export class AppStore {
         break;
       }
       case AppActionType.ADD_FILE_TO: {
-        const { file, parent } = action as AddFileToAction;
-        this.addFileTo(file, parent);
+        const { fileName, parent, fileType } = action as AddFileToAction;
+        this.addFileTo(fileName, fileType, parent);
         break;
       }
       case AppActionType.DELETE_FILE: {

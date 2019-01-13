@@ -51,7 +51,7 @@ import {
   setViewType,
   logLn,
 } from "../actions/AppActions";
-import { Project, File, FileType, Directory, ModelRef } from "../models";
+import { Project, File, FileType, Directory, ModelRef, fileTypeFromFileName } from "../models";
 import { Service, Language } from "../service";
 import { Split, SplitOrientation, SplitInfo } from "./Split";
 
@@ -84,7 +84,7 @@ import { Button } from "./shared/Button";
 
 import { NewFileDialog } from "./NewFileDialog";
 import { EditFileDialog } from "./EditFileDialog";
-import { UploadFileDialog } from "./UploadFileDialog";
+// import { UploadFileDialog } from "./UploadFileDialog";
 import { ToastContainer } from "./Toasts";
 import { Spacer, Divider } from "./Widgets";
 import { ShareDialog } from "./ShareDialog";
@@ -141,7 +141,7 @@ export interface AppState {
   /**
    * If not null, the upload file dialog is open.
    */
-  uploadFileDialogDirectory: ModelRef<Directory>;
+  // uploadFileDialogDirectory: ModelRef<Directory>;
   /**
    * If true, the new directory dialog is open.
    */
@@ -210,7 +210,7 @@ export class App extends React.Component<AppProps, AppState> {
       editorSplits: [],
       showProblems: true,
       showSandbox: props.embeddingParams.type !== EmbeddingType.Arc,
-      uploadFileDialogDirectory: null,
+      // uploadFileDialogDirectory: null,
       newDirectoryDialog: null,
       tabGroups: null,
       activeTabGroup: null,
@@ -678,8 +678,8 @@ export class App extends React.Component<AppProps, AppState> {
           onCancel={() => {
             this.setState({ newFileDialogDirectory: null });
           }}
-          onCreate={(file: File) => {
-            addFileTo(file, this.state.newFileDialogDirectory.getModel());
+          onCreate={(fileName: string) => {
+            addFileTo(fileName, fileTypeFromFileName(fileName), this.state.newFileDialogDirectory.getModel());
             this.setState({ newFileDialogDirectory: null });
           }}
         />
@@ -707,7 +707,7 @@ export class App extends React.Component<AppProps, AppState> {
           }}
         />
       }
-      {this.state.uploadFileDialogDirectory &&
+      {/* {this.state.uploadFileDialogDirectory &&
         <UploadFileDialog
           isOpen={true}
           directory={this.state.uploadFileDialogDirectory}
@@ -721,7 +721,7 @@ export class App extends React.Component<AppProps, AppState> {
             this.setState({ uploadFileDialogDirectory: null });
           }}
         />
-      }
+      } */}
       {this.state.newDirectoryDialog &&
         <NewDirectoryDialog
           isOpen={true}
@@ -729,8 +729,8 @@ export class App extends React.Component<AppProps, AppState> {
           onCancel={() => {
             this.setState({ newDirectoryDialog: null });
            }}
-          onCreate={(directory: Directory) => {
-            addFileTo(directory, this.state.newDirectoryDialog.getModel());
+          onCreate={(directoryName: string) => {
+            addFileTo(directoryName, FileType.Directory, this.state.newDirectoryDialog.getModel());
             this.setState({ newDirectoryDialog: null });
           }}
         />
@@ -777,12 +777,12 @@ export class App extends React.Component<AppProps, AppState> {
               }
               openFile(file, defaultViewTypeForFileType(file.type), false);
             }}
-            onMoveFile={(file: File, directory: Directory) => {
-              addFileTo(file, directory);
-            }}
-            onUploadFile={(directory: Directory) => {
-              this.setState({ uploadFileDialogDirectory: ModelRef.getRef(directory)});
-            }}
+            // onMoveFile={(file: File, directory: Directory) => {
+            //   addFileTo(file, directory);
+            // }}
+            // onUploadFile={(directory: Directory) => {
+            //   this.setState({ uploadFileDialogDirectory: ModelRef.getRef(directory)});
+            // }}
             onNewDirectory={(directory: Directory) => {
               this.setState({ newDirectoryDialog: ModelRef.getRef(directory)});
             }}

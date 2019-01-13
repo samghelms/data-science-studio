@@ -28,77 +28,80 @@ import {
   DragOverBubble
 } from "./monaco-extra";
 import { File, Directory } from "./models";
-import { uploadFilesToDirectory, isUploadAllowedForMimeType } from "./util";
+import {
+  // uploadFilesToDirectory,
+  isUploadAllowedForMimeType
+} from "./util";
 
-export class DragAndDrop implements IDragAndDrop {
-  private target: any;
+// export class DragAndDrop implements IDragAndDrop {
+//   private target: any;
 
-  constructor(target: any) {
-    this.target = target;
-  }
+//   constructor(target: any) {
+//     this.target = target;
+//   }
 
-  /**
-   * Returns a uri if the given element should be allowed to drag.
-   * Returns null, otherwise.
-   */
-  getDragURI(tree: ITree, element: File): string {
-    return element.key;
-  }
+//   /**
+//    * Returns a uri if the given element should be allowed to drag.
+//    * Returns null, otherwise.
+//    */
+//   getDragURI(tree: ITree, element: File): string {
+//     return element.key;
+//   }
 
-  /**
-   * Returns a label to display when dragging the element.
-   */
-  getDragLabel?(tree: ITree, elements: File[]): string {
-    return elements[0].name;
-  }
+//   /**
+//    * Returns a label to display when dragging the element.
+//    */
+//   getDragLabel?(tree: ITree, elements: File[]): string {
+//     return elements[0].name;
+//   }
 
-  /**
-   * Sent when the drag operation is starting.
-   */
-  onDragStart(tree: ITree, data: IDragAndDropData, originalEvent: DragMouseEvent): void {
-    return;
-  }
+//   /**
+//    * Sent when the drag operation is starting.
+//    */
+//   onDragStart(tree: ITree, data: IDragAndDropData, originalEvent: DragMouseEvent): void {
+//     return;
+//   }
 
-  /**
-   * Returns a DragOverReaction indicating whether sources can be
-   * dropped into target or some parent of the target.
-   */
-  onDragOver(tree: ITree, data: IDragAndDropData, targetElement: File, originalEvent: DragMouseEvent): IDragOverReaction {
-    // File being dragged into the browser
-    if (!(data as any).elements) {
-      const items = Array.from(originalEvent.browserEvent.dataTransfer.items);
-      // In Firefox, tree elements get data transfer items with the "text/uri-list" type. This is a
-      // workaround to ignore that behavior.
-      const hasItemsUriListType = items.some(item => item.type === "text/uri-list");
-      if (items.length && !hasItemsUriListType) {
-        return {
-          accept: items.every(item => isUploadAllowedForMimeType(item.type)),
-          bubble: DragOverBubble.BUBBLE_DOWN,
-          autoExpand: true
-        };
-      }
-    }
-    // Regular drag
-    const file: File = data.elements[0];
-    return {
-      accept: targetElement instanceof Directory &&
-              targetElement !== file &&
-              !targetElement.isDescendantOf(file),
-      bubble: DragOverBubble.BUBBLE_DOWN,
-      autoExpand: true
-    };
-  }
+//   /**
+//    * Returns a DragOverReaction indicating whether sources can be
+//    * dropped into target or some parent of the target.
+//    */
+//   onDragOver(tree: ITree, data: IDragAndDropData, targetElement: File, originalEvent: DragMouseEvent): IDragOverReaction {
+//     // File being dragged into the browser
+//     if (!(data as any).elements) {
+//       const items = Array.from(originalEvent.browserEvent.dataTransfer.items);
+//       // In Firefox, tree elements get data transfer items with the "text/uri-list" type. This is a
+//       // workaround to ignore that behavior.
+//       const hasItemsUriListType = items.some(item => item.type === "text/uri-list");
+//       if (items.length && !hasItemsUriListType) {
+//         return {
+//           accept: items.every(item => isUploadAllowedForMimeType(item.type)),
+//           bubble: DragOverBubble.BUBBLE_DOWN,
+//           autoExpand: true
+//         };
+//       }
+//     }
+//     // Regular drag
+//     const file: File = data.elements[0];
+//     return {
+//       accept: targetElement instanceof Directory &&
+//               targetElement !== file &&
+//               !targetElement.isDescendantOf(file),
+//       bubble: DragOverBubble.BUBBLE_DOWN,
+//       autoExpand: true
+//     };
+//   }
 
-  /**
-   * Handles the action of dropping sources into target.
-   */
-  async drop(tree: ITree, data: IDragAndDropData, targetElement: File, originalEvent: DragMouseEvent) {
-    const items = originalEvent.browserEvent.dataTransfer.items;
-    if (!(data as any).elements && items.length) {
-      await uploadFilesToDirectory(items, targetElement as Directory);
-      return;
-    }
-    const file: File = data.elements[0];
-    return this.target.props.onMoveFile && this.target.props.onMoveFile(file, targetElement as Directory);
-  }
-}
+//   /**
+//    * Handles the action of dropping sources into target.
+//    */
+//   async drop(tree: ITree, data: IDragAndDropData, targetElement: File, originalEvent: DragMouseEvent) {
+//     const items = originalEvent.browserEvent.dataTransfer.items;
+//     if (!(data as any).elements && items.length) {
+//       await uploadFilesToDirectory(items, targetElement as Directory);
+//       return;
+//     }
+//     const file: File = data.elements[0];
+//     return this.target.props.onMoveFile && this.target.props.onMoveFile(file, targetElement as Directory);
+//   }
+// }

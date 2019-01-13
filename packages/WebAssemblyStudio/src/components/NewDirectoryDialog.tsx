@@ -32,7 +32,7 @@ import { TextInputBox } from "./Widgets";
 export class NewDirectoryDialog extends React.Component<{
   isOpen: boolean;
   directory: ModelRef<Directory>
-  onCreate: (directory: Directory) => void;
+  onCreate: (directoryName: string) => void;
   onCancel: () => void;
 }, {
     name: string;
@@ -96,8 +96,7 @@ export class NewDirectoryDialog extends React.Component<{
             isDisabled={!this.state.name || !!this.state.nameError}
             onClick={() => {
               console.log(this.state);
-              const directory = new Directory(this.state.name, "");
-              return this.props.onCreate && this.props.onCreate(directory);
+              return this.props.onCreate && this.props.onCreate(this.state.name);
             }}
           />
         </div>

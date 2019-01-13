@@ -30,6 +30,7 @@ import { ContentsManager } from "@jupyterlab/services";
 
 export class File {
   name: string;
+  jupyterName?: string;
   type: FileType;
   buffer: monaco.editor.ITextModel;
   contentsManager: ContentsManager;
@@ -65,6 +66,9 @@ export class File {
     this.data = null;
     this.contentsManager = contentsManager;
     this.parent = parent;
+    if (this.parent) {
+      this.jupyterName = this.parent.base.length > 0 ? this.parent.base + "/" + this.name : this.name;
+    }
     if (type === FileType.JupyterNotebook) {
       this.bufferType = FileType.JupyterNotebook;
       // this.notebook = {};
@@ -208,6 +212,7 @@ export class File {
     const path = [];
     let parent = this.parent;
     while (parent && parent !== base) {
+      console.log(parent.name);
       path.unshift(parent.name);
       parent = parent.parent;
     }
@@ -230,7 +235,7 @@ export class File {
       }
     } else {
       this.data = this.buffer.getValue();
-      this.contentsManager.save(this.name, {content: this.data, format: "text", type: "file"});
+      this.contentsManager.save(this.jupyterName, {content: this.data, format: "text", type: "file"});
       this.resetDirty();
     }
     this.notifyDidChangeData();
@@ -250,7 +255,7 @@ export class File {
   }
 
   async requestServerForFileData() {
-    const fileContents = (await this.contentsManager.get(this.name)).content;
+    const fileContents = (await this.contentsManager.get(this.jupyterName)).content;
     // TODO: add a check that we got a string here
     this.setData(fileContents);
   }

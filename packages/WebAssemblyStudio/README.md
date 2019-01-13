@@ -80,3 +80,8 @@ jupyter notebook --NotebookApp.allow_origin=*
 10. Allow creating new files, folders and deleting files, folders
 11. folders and files can't have the same name -- (is this true of a unix file system as well??)
 12. Save state of file tree before/after file and folder addition/deletion
+13. Find some way of compiling jupyter to webassembly and run an example in the browser?
+14. allow selecting multiple files for deletion
+15. fix up right clicking on folders and files to delete them
+16. improve selection menu and file/folder renaming ux
+17. Handle name collisions for files and folders

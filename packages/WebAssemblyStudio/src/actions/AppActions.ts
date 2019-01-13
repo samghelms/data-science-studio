@@ -20,7 +20,7 @@
  */
 
 import dispatcher from "../dispatcher";
-import { File, Directory, Project } from "../models";
+import { File, Directory, Project, FileType } from "../models";
 import { App } from "../components/App";
 import { Template } from "../components/NewProjectDialog";
 import { View, ViewType } from "../components/editor/View";
@@ -32,7 +32,6 @@ import getConfig from "../config";
 import { RewriteSourcesContext } from "../utils/rewriteSources";
 import { runTask as runGulpTask, RunTaskExternals } from "../utils/taskRunner";
 import { ContentsManager, ServerConnection, SessionManager, ServiceManager } from "@jupyterlab/services";
-
 export enum AppActionType {
   ADD_FILE_TO = "ADD_FILE_TO",
   LOAD_PROJECT = "LOAD_PROJECT",
@@ -60,14 +59,16 @@ export interface AppAction {
 
 export interface AddFileToAction extends AppAction {
   type: AppActionType.ADD_FILE_TO;
-  file: File;
+  fileName: string;
+  fileType: FileType;
   parent: Directory;
 }
 
-export function addFileTo(file: File, parent: Directory) {
+export function addFileTo(fileName: string, fileType: FileType, parent: Directory) {
   dispatcher.dispatch({
     type: AppActionType.ADD_FILE_TO,
-    file,
+    fileName,
+    fileType,
     parent,
   } as AddFileToAction);
 }
@@ -213,7 +214,7 @@ export interface OpenFilesAction extends AppAction {
 
 export async function openProjectFiles(template: Template) {
   const newProject = new Project();
-  await Service.loadFilesIntoProject(template.files, newProject, template.baseUrl);
+  // await Service.loadFilesIntoProject(template.files, newProject, template.baseUrl);
   dispatcher.dispatch({
     type: AppActionType.LOAD_PROJECT,
     project: newProject

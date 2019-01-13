@@ -47,7 +47,7 @@ export class Project extends Directory {
   onDirtyFileUsed = new EventDispatcher("Dirty File Used");
 
   constructor(contentsManager?: ContentsManager, serviceManager?: ServiceManager) {
-    super("Project", "", contentsManager);
+    super("", "", contentsManager);
     this.serviceManager = serviceManager;
 
     if (serviceManager) {

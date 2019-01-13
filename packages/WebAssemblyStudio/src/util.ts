@@ -225,65 +225,65 @@ export async function readUploadedFile(inputFile: File, readAs: "text" | "arrayB
   });
 }
 
-export async function readUploadedDirectory(inputEntry: any, root: Directory, customRoot?: string) {
-  const reader = inputEntry.createReader();
-  reader.readEntries(((entries: any) => {
-    entries.forEach(async (entry: any) => {
-      if (entry.isDirectory) {
-        return readUploadedDirectory(entry, root, customRoot);
-      }
-      entry.file(async (file: File) => {
-        try {
-          const name: string = file.name;
-          let path: string = entry.fullPath.replace(/^\/+/g, "");
-          if (customRoot) {
-            const pathArray = path.split("/");
-            pathArray[0] = customRoot;
-            path = pathArray.join("/");
-          }
-          const fileType = fileTypeForExtension(name.split(".").pop());
-          const data = await readUploadedFile(file, isBinaryFileType(fileType) ? "arrayBuffer" : "text");
-          const newFile = await root.newFile(path, fileType, false, true);
-          newFile.setData(data);
-        } catch (e) {
-          console.log("Unable to read the file!");
-        }
-      });
-    });
-  }));
-}
+// export async function readUploadedDirectory(inputEntry: any, root: Directory, customRoot?: string) {
+//   const reader = inputEntry.createReader();
+//   reader.readEntries(((entries: any) => {
+//     entries.forEach(async (entry: any) => {
+//       if (entry.isDirectory) {
+//         return readUploadedDirectory(entry, root, customRoot);
+//       }
+//       entry.file(async (file: File) => {
+//         try {
+//           const name: string = file.name;
+//           let path: string = entry.fullPath.replace(/^\/+/g, "");
+//           if (customRoot) {
+//             const pathArray = path.split("/");
+//             pathArray[0] = customRoot;
+//             path = pathArray.join("/");
+//           }
+//           const fileType = fileTypeForExtension(name.split(".").pop());
+//           const data = await readUploadedFile(file, isBinaryFileType(fileType) ? "arrayBuffer" : "text");
+//           const newFile = await root.newFile(path, fileType, false, true);
+//           newFile.setData(data);
+//         } catch (e) {
+//           console.log("Unable to read the file!");
+//         }
+//       });
+//     });
+//   }));
+// }
 
-export async function uploadFilesToDirectory(items: any, root: Directory) {
-  Array.from(items).forEach(async (item: any) => {
-    if (typeof item.webkitGetAsEntry === "function") {
-      const entry = item.webkitGetAsEntry();
-      if (entry.isDirectory) {
-        if (root.getImmediateChild(entry.name)) {
-          const customRoot = await root.handleNameCollision(entry.name);
-          return readUploadedDirectory(entry, root, customRoot);
-        }
-        return readUploadedDirectory(entry, root);
-      }
-    }
-    let file: File;
-    if (item instanceof DataTransferItem) {
-      file = item.getAsFile();
-    } else {
-      file = item;
-    }
-    const name: string = file.name;
-    const path: string = (file as any).webkitRelativePath || name; // This works in FF also.
-    const fileType = fileTypeForExtension(name.split(".").pop());
-    let data: any;
-    try {
-      data = await readUploadedFile(file, isBinaryFileType(fileType) ? "arrayBuffer" : "text");
-      const newFile = await root.newFile(path, fileType, false, true);
-      newFile.setData(data);
-    } catch (e) {
-      console.log("Unable to read the file!");
-    }
-  });
-}
+// export async function uploadFilesToDirectory(items: any, root: Directory) {
+//   Array.from(items).forEach(async (item: any) => {
+//     if (typeof item.webkitGetAsEntry === "function") {
+//       const entry = item.webkitGetAsEntry();
+//       if (entry.isDirectory) {
+//         if (root.getImmediateChild(entry.name)) {
+//           const customRoot = await root.handleNameCollision(entry.name);
+//           return readUploadedDirectory(entry, root, customRoot);
+//         }
+//         return readUploadedDirectory(entry, root);
+//       }
+//     }
+//     let file: File;
+//     if (item instanceof DataTransferItem) {
+//       file = item.getAsFile();
+//     } else {
+//       file = item;
+//     }
+//     const name: string = file.name;
+//     const path: string = (file as any).webkitRelativePath || name; // This works in FF also.
+//     const fileType = fileTypeForExtension(name.split(".").pop());
+//     let data: any;
+//     try {
+//       data = await readUploadedFile(file, isBinaryFileType(fileType) ? "arrayBuffer" : "text");
+//       const newFile = await root.newFile(path, fileType, false, true);
+//       newFile.setData(data);
+//     } catch (e) {
+//       console.log("Unable to read the file!");
+//     }
+//   });
+// }
 
 export function isUploadAllowedForMimeType(type: string) {
   if (type === "") { // Firefox doesn't show the "application/wasm" mime type.

@@ -32,7 +32,7 @@ import { validateFileName } from "../util";
 interface NewFileDialogProps {
   isOpen: boolean;
   directory: ModelRef<Directory>;
-  onCreate: (file: File) => void;
+  onCreate: (fileName: string) => void;
   onCancel: () => void;
 }
 
@@ -84,6 +84,7 @@ export class NewFileDialog extends React.Component<NewFileDialogProps, NewFileDi
     return "Create";
   }
   render() {
+    const base = (this.props.directory ? appStore.getPath(this.props.directory) + "/" : "");
     return <ReactModal
       isOpen={this.props.isOpen}
       contentLabel="Create New File"
@@ -135,7 +136,7 @@ export class NewFileDialog extends React.Component<NewFileDialogProps, NewFileDi
           </div>
         </div>
         <div style={{ flex: 1, padding: "8px" }}>
-          <TextInputBox label={"Name: " + (this.props.directory ? appStore.getPath(this.props.directory) + "/" : "")} error={this.state.nameError} value={this.state.name} onChange={this.onChangeName}/>
+          <TextInputBox label={"Name: " + base} error={this.state.nameError} value={this.state.name} onChange={this.onChangeName}/>
         </div>
         <div>
           <Button
@@ -152,8 +153,8 @@ export class NewFileDialog extends React.Component<NewFileDialogProps, NewFileDi
             title="Create New File"
             isDisabled={!this.state.fileType || !this.state.name || !!this.state.nameError}
             onClick={() => {
-              const file = new File(this.fileName(), this.state.fileType);
-              return this.props.onCreate && this.props.onCreate(file);
+              // const file = new File(this.fileName(), this.state.fileType);
+              return this.props.onCreate && this.props.onCreate(this.fileName());
             }}
           />
         </div>
