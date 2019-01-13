@@ -85,3 +85,4 @@ jupyter notebook --NotebookApp.allow_origin=*
 15. fix up right clicking on folders and files to delete them
 16. improve selection menu and file/folder renaming ux
 17. Handle name collisions for files and folders
+18. Put together a demo

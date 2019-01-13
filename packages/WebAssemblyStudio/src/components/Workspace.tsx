@@ -25,6 +25,7 @@ import { DirectoryTree } from "./DirectoryTree";
 import { Project, File, Directory, ModelRef } from "../models";
 import { SplitOrientation, SplitInfo, Split } from "./Split";
 import appStore from "../stores/AppStore";
+import { MonacoUtils } from "../monaco-utils";
 
 export interface WorkspaceProps {
   /**
@@ -55,6 +56,7 @@ export class Workspace extends React.Component<WorkspaceProps, WorkSpaceState> {
     this.state = {
       splits: []
     };
+    this.refreshTree = this.refreshTree.bind(this);
   }
   componentDidMount() {
     appStore.onDidChangeDirty.register(this.refreshTree);
@@ -64,8 +66,10 @@ export class Workspace extends React.Component<WorkspaceProps, WorkSpaceState> {
     appStore.onDidChangeDirty.unregister(this.refreshTree);
     appStore.onDidChangeChildren.unregister(this.refreshTree);
   }
-  refreshTree = () => {
-    this.directoryTree.tree.refresh();
+  async refreshTree() {
+    const expandedEls = MonacoUtils.getExpandedElements(this.directoryTree.tree);
+    await this.directoryTree.tree.refresh();
+    MonacoUtils.expandTree(this.directoryTree.tree, expandedEls);
   }
   render() {
     const project = this.props.project;

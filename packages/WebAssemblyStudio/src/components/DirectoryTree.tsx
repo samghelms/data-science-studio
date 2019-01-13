@@ -24,7 +24,6 @@ import { Project, File, Directory, FileType, ModelRef, isBinaryFileType, IStatus
 import { Service } from "../service";
 import { ITree, ContextMenuEvent } from "../monaco-extra";
 import { MonacoUtils } from "../monaco-utils";
-import { ViewType } from "./editor/View";
 import { openFile, pushStatus, popStatus, logLn } from "../actions/AppActions";
 import { FileTemplate } from "../utils/Template";
 import { createController } from "../monaco-controller";
@@ -94,6 +93,7 @@ export class DirectoryTree extends React.Component<DirectoryTreeProps, {
     this.container = container;
   }
   private ensureTree() {
+    console.log("ensure tree called");
     if (this.container.lastChild) {
       this.container.removeChild(this.container.lastChild);
     }

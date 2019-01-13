@@ -200,6 +200,18 @@ a {
   line-height: 24px;
 }
 
+/* .content:before {
+  display: inline-block !important;
+} */
+
+/* .monaco-tree.monaco-tree-rows.show-twisties {
+  display: inline-block !important;
+}
+
+.monaco-tree .monaco-tree-rows.show-twisties > .monaco-tree-row.has-children > .content:before {
+  display: inline-block !important;
+} */
+
 .directory-entry {
   font-family:  -apple-system,BlinkMacSystemFont,Segoe WPC,Segoe UI,HelveticaNeue-Light,Ubuntu,Droid Sans,sans-serif;
   display: flex;

@@ -1,5 +1,3 @@
-import { element } from "prop-types";
-
 /* Copyright 2018 Mozilla Foundation
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -26,6 +24,7 @@ import { element } from "prop-types";
 
 export class MonacoUtils {
   static Tree: any;
+  static TreeModel: any;
   static ContextSubMenu: any;
   static ContextMenuService: any;
   static ContextViewService: any;
@@ -46,29 +45,47 @@ export class MonacoUtils {
     // @ts-ignore
     const {Tree} = await import(/* webpackChunkName: "monaco-editor" */ "monaco-editor/esm/vs/base/parts/tree/browser/treeImpl");
     // @ts-ignore
+    const {TreeModel} = await import(/* webpackChunkName: "monaco-editor" */ "monaco-editor/esm/vs/base/parts/tree/browser/treeModel");
+    // @ts-ignore
     const TreeDefaults = await import(/* webpackChunkName: "monaco-editor" */ "monaco-editor/esm/vs/base/parts/tree/browser/treeDefaults");
     MonacoUtils.Action = Action;
     MonacoUtils.ContextSubMenu = ContextSubMenu;
     MonacoUtils.ContextMenuService = ContextMenuService;
     MonacoUtils.ContextViewService = ContextViewService;
     MonacoUtils.Tree = Tree;
+    MonacoUtils.TreeModel = TreeModel;
     MonacoUtils.TreeDefaults = TreeDefaults;
   }
 
-  static expandTree(tree: any) {
+  static expandTree(tree: any, prevExpanded: any[]) {
     const model = tree.model;
-    console.log(model);
+    const elements = [];
+    const elementsRaw = [];
+
+    let item;
+    const nav = model.getNavigator();
+    while (item = nav.next()) {
+      if (prevExpanded.indexOf(item.getElement().jupyterName) !== -1) {
+        elements.push(item);
+      }
+    }
+    for (let i = 0, len = elements.length; i < len; i++) {
+      model.expand(elements[i]);
+    }
+  }
+
+  static getExpandedElements(tree: any): any[] {
+    const result: any[] = [];
+    const model = tree.model;
     const elements = [];
 
     let item;
     const nav = model.getNavigator();
-
     while (item = nav.next()) {
-      elements.push(item);
+      if (item.isExpanded()) {
+        result.push(item.getElement().jupyterName);
+      }
     }
-    console.log(elements[0]);
-    for (let i = 0, len = elements.length; i < len; i++) {
-      model.expand(elements[i]);
-    }
+    return result;
   }
 }
