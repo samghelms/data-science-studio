@@ -19,7 +19,7 @@
  * SOFTWARE.
  */
 
-import { Wat } from "../languages/wat";
+// import { Wat } from "../languages/wat";
 import { Log } from "../languages/log";
 import { Rust } from "../languages/rust";
 import { Cton } from "../languages/cton";
@@ -29,15 +29,15 @@ export default async function registerLanguages() {
 
   // Wat
 
-  monaco.languages.onLanguage("wat", () => {
-    monaco.languages.setMonarchTokensProvider("wat", Wat.MonarchDefinitions as any);
-    monaco.languages.setLanguageConfiguration("wat", Wat.LanguageConfiguration);
-    monaco.languages.registerCompletionItemProvider("wat", Wat.CompletionItemProvider);
-    monaco.languages.registerHoverProvider("wat", Wat.HoverProvider as any);
-  });
-  monaco.languages.register({
-    id: "wat"
-  });
+  // monaco.languages.onLanguage("wat", () => {
+  //   monaco.languages.setMonarchTokensProvider("wat", Wat.MonarchDefinitions as any);
+  //   monaco.languages.setLanguageConfiguration("wat", Wat.LanguageConfiguration);
+  //   monaco.languages.registerCompletionItemProvider("wat", Wat.CompletionItemProvider);
+  //   monaco.languages.registerHoverProvider("wat", Wat.HoverProvider as any);
+  // });
+  // monaco.languages.register({
+  //   id: "wat"
+  // });
 
   // Log
 

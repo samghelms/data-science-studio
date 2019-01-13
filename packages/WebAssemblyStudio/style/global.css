@@ -913,6 +913,16 @@ a {
   color: inherit !important; /* first label is dark-blue otherwise? */
 }
 
+/* Needed to override defaults so that icons line up correctly */
+.monaco-tree .monaco-tree-rows.show-twisties > .monaco-tree-row.has-children > .content:before {
+	position: initial !important;
+	display: inline-block !important;
+}
+
+.content {
+  display: flex;
+}
+
 .monaco-icon-label.dirty::after {
   content: "M";
   font-size: 10px;
